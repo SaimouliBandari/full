@@ -10,7 +10,7 @@ const dns = require('node:dns');
 const console = require('console');
 const URL = require('node:url').URL;
 const isValidHostname = require('is-valid-hostname');
-
+var somenum = Math.floor(Math.random() * 300);
 // Basic Configuration
 const port = process.env.PORT || 3000;
 
@@ -77,11 +77,9 @@ app.post('/api/shorturl', bodyParser.urlencoded({ extended: false }) , (request,
               Url.find({original : inputUrl}, (err, ans) => {
                 //console.log(err);
                // console.log(Object.keys(ans).length === 0);
+               
+               let inputShort = (Date.now()+somenum);
                 if(Object.keys(ans).length === 0){
-
-                  var somenum = Math.floor(Math.random()*300);
-
-                  var inputShort = (Date.now + somenum);
                   Url.findOneAndUpdate(
                     {original: inputUrl},
                     {original: inputUrl, short: inputShort},
@@ -93,7 +91,7 @@ app.post('/api/shorturl', bodyParser.urlencoded({ extended: false }) , (request,
                       }
                     }
                   )
-                  inputShort = inputShort + 1;
+                  
                   //console.log(inputShort);
                 }else{
                   responseObject["short_url"] = ans[0].short;
