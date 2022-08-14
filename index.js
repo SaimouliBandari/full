@@ -71,7 +71,7 @@ app.post('/api/shorturl', bodyParser.urlencoded({ extended: false }) , (request,
 
 
             if(err){
-              response.json({"error":"Invalid Hostname"});
+              response.json({"error":"invalid url"});
             }else{
               Url.find({original : inputUrl}, (err, ans) => {
                 //console.log(err);
