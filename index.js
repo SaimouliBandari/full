@@ -59,6 +59,12 @@ app.post('/api/shorturl', bodyParser.urlencoded({ extended: false }) , (request,
   };
 
   responseObject['original_url'] = inputUrl;
+      const httpRegex = /^(http|https)(:\/\/)/; 
+      if (!httpRegex.test(inputUrl)) {
+      res.json({ error: 'invalid url' });
+      return;
+      }
+
       try {
         const hostUrl = new URL(inputUrl);
 
@@ -101,7 +107,7 @@ app.post('/api/shorturl', bodyParser.urlencoded({ extended: false }) , (request,
         });
       } catch (err) {
         
-       response.send({ "error": 'invalid url' });
+      // response.send({ "error": 'invalid url' });
        // response.json( {error:"Invalid URL"} );
       }
 });
