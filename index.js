@@ -3,7 +3,6 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const bodyParser = require('body-parser');
-const { request } = require('express');
 const mongoose = require('mongoose');
 const dns = require('node:dns');
 const console = require('console');
@@ -51,7 +50,7 @@ app.listen(port, function () {
 /* Database Connection */
 
 let responseObject = {}
-app.post('/api/shorturl', bodyParser.urlencoded({ extended: false }) , (request, response) => {
+app.post('/api/shorturl',(request, response) => {
   let inputUrl = request.body['url'];
   const options = {
     family: 6,
