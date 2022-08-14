@@ -99,9 +99,10 @@ app.post('/api/shorturl', bodyParser.urlencoded({ extended: false }) , (request,
 
             }
         });
-      } catch (error) {
-       // response.json({ error: 'invalid url' });
-        response.json( {error:"Invalid URL"} );
+      } catch (err) {
+        
+       response.send({ "error": 'invalid url' });
+       // response.json( {error:"Invalid URL"} );
       }
 });
 
@@ -112,7 +113,7 @@ app.get('/api/shorturl/:input', (request, response) => {
     if(!error && result != undefined){
       response.redirect(result.original)
     }else{
-      response.json('URL not Found')
+      response.send('URL not Found');
     }
   })
 })
