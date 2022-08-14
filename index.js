@@ -8,7 +8,6 @@ const mongoose = require('mongoose');
 const dns = require('node:dns');
 const console = require('console');
 const URL = require('node:url').URL;
-const isValidHostname = require('is-valid-hostname');
 var somenum = Math.floor(Math.random() * 300);
 // Basic Configuration
 const port = process.env.PORT || 3000;
@@ -101,7 +100,8 @@ app.post('/api/shorturl', bodyParser.urlencoded({ extended: false }) , (request,
             }
         });
       } catch (error) {
-        response.json({ error: 'invalid url' });
+       // response.json({ error: 'invalid url' });
+        response.json( {error:"Invalid URL"} );
       }
 });
 
