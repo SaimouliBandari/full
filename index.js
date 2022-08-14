@@ -26,7 +26,6 @@ let Url = mongoose.model('Url', urlSchema);
 
 
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/public', express.static(`${process.cwd()}/public`));
 
 app.use('/public', express.static(process.cwd() + '/public'));
@@ -50,7 +49,7 @@ app.listen(port, function () {
 /* Database Connection */
 
 let responseObject = {}
-app.post('/api/shorturl',(request, response) => {
+app.post('/api/shorturl', bodyParser.urlencoded({ extended: false }) , (request, response) => {
   let inputUrl = request.body['url'];
   const options = {
     family: 6,
