@@ -44,7 +44,7 @@ app.listen(port, function () {
 
 /* Database Connection */
 
-let responseObject = {}
+let responseObject = {};
 app.post('/api/shorturl', bodyParser.urlencoded({ extended: false }) , (request, response) => {
   let inputUrl = request.body['url'];
   const options = {
@@ -53,12 +53,12 @@ app.post('/api/shorturl', bodyParser.urlencoded({ extended: false }) , (request,
   };
 
   responseObject['original_url'] = inputUrl;
-  
-      const httpRegex = /^(http|https)(:\/\/)/; 
-      if (!httpRegex.test(inputUrl)) {
-      res.json({ error: 'invalid url' });
-      return;
-      }
+
+      // const httpRegex = /^(http|https)(:\/\/)/; 
+      // if (!httpRegex.test(inputUrl)) {
+      // res.json({ error: 'invalid url' });
+      // return;
+      // }
 
       try {
         const hostUrl = new URL(inputUrl);
@@ -101,18 +101,17 @@ app.post('/api/shorturl', bodyParser.urlencoded({ extended: false }) , (request,
             }
         });
       } catch (err) {
-        
-      // response.send({ "error": 'invalid url' });
-       // response.json( {error:"Invalid URL"} );
+        //response.json({ "error": 'invalid url' });
+        response.json( {error:"Invalid URL"} );
       }
 });
 
 app.get('/api/shorturl/:input', (request, response) => {
-  let input = request.params.input
+  let input = request.params.input;
   
   Url.findOne({short: input}, (error, result) => {
     if(!error && result != undefined){
-      response.redirect(result.original)
+      response.redirect(result.original);
     }else{
       response.send('URL not Found');
     }
