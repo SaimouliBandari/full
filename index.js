@@ -6,15 +6,14 @@ const app = express();
 const bodyParser = require('body-parser');
 const { request } = require('express');
 const mongoose = require('mongoose');
-const urlExists = require('node:url');
-const dns = require('dns');
-const { log } = require('node:console');
-
-
+const dns = require('node:dns');
+const console = require('console');
+const URL = require('node:url').URL;
+const isValidHostname = require('is-valid-hostname');
 
 // Basic Configuration
 const port = process.env.PORT || 3000;
-let inputShort = 1
+
 mongoose.connect(process.env.MONGO_URL, {useNewUrlParser : true, useUnifiedTopology: true}, (err) => {
   if(err) console.log(err);
   else
@@ -50,64 +49,60 @@ app.listen(port, function () {
   console.log(`Node.js listening at.. ${port}`);
 });
 
+
 /* Database Connection */
 
 let responseObject = {}
 app.post('/api/shorturl', bodyParser.urlencoded({ extended: false }) , (request, response) => {
-  let inputUrl = request.body['url']
-  
-  let urlRegex = new RegExp(/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi)
-  
-  if(!inputUrl.match(urlRegex)){
-    response.json({error: 'Invalid URL'})
-    return
-  }
-    
-  responseObject['original_url'] = inputUrl
-  
-  
-  
-  // Url.findOne({})
-  //       .sort({short: 'desc'})
-  //       .exec((error, result) => {
-  //         // if(!error && result != undefined){
-  //         //   inputShort = result.short + 1
-  //         // }
-  //         if(!error){
-  //           Url.findOneAndUpdate(
-  //             {original: inputUrl},
-  //             {original: inputUrl, short: inputShort++},
-  //             {new: true, upsert: true },
-  //             (error, savedUrl)=> {
-  //               if(!error){
-  //                 responseObject['short_url'] = savedUrl.short
-  //                 response.json(responseObject)
-  //               }
-  //             }
-  //           )
-  //         }
-  // })
-    Url.find({original : inputUrl}, (err, ans) => {
-     // console.log(err);
-     // console.log(Object.keys(ans).length === 0);
-      if(Object.keys(ans).length === 0){
-        Url.findOneAndUpdate(
-          {original: inputUrl},
-          {original: inputUrl, short: inputShort++},
-          {new: true, upsert: true },
-          (error, savedUrl)=> {
-            if(!error){
-              responseObject['short_url'] = savedUrl.short
-              response.json(responseObject)
+  let inputUrl = request.body['url'];
+  const options = {
+    family: 6,
+    hints: dns.ADDRCONFIG | dns.V4MAPPED,
+  };
+
+  responseObject['original_url'] = inputUrl;
+      try {
+        const hostUrl = new URL(inputUrl);
+
+        //check for valid host name;
+        dns.lookup(hostUrl.hostname, options, (err, addrs, family) => {
+
+
+           // response.send({hostname : hostUrl.hostname, error : err, address : addrs, fam : family});
+
+
+            if(err){
+              response.json({"error":"Invalid Hostname"});
+            }else{
+              Url.find({original : inputUrl}, (err, ans) => {
+                //console.log(err);
+               // console.log(Object.keys(ans).length === 0);
+                if(Object.keys(ans).length === 0){
+                  var inputShort = Math.round((Date.now()/(Math.pow(10,5))));
+                  Url.findOneAndUpdate(
+                    {original: inputUrl},
+                    {original: inputUrl, short: inputShort},
+                    {new: true, upsert: true },
+                    (error, savedUrl)=> {
+                      if(!error){
+                        responseObject['short_url'] = savedUrl.short
+                        response.json(responseObject)
+                      }
+                    }
+                  )
+                  inputShort = inputShort + 1;
+                  //console.log(inputShort);
+                }else{
+                  responseObject["short_url"] = ans[0].short;
+                  response.json(responseObject);
+                }
+              });
+
             }
-          }
-        )
-      }else{
-        responseObject["short_url"] = ans[0].short;
-        response.json(responseObject);
+        });
+      } catch (error) {
+        response.json({"error":"Invalid URL"});
       }
-    });
-     
 });
 
 app.get('/api/shorturl/:input', (request, response) => {

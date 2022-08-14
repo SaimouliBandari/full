@@ -1,0 +1,18 @@
+console.log(inputUrl);
+
+  try {
+      new URL(inputUrl);
+      console.log(true);
+  } catch (error) {
+    console.log(false);
+  }
+
+  const isValidHostname = require('is-valid-hostname')
+  console.log( isValidHostname(inputUrl) );// true
+  
+  
+  
+  
+
+    
+     
