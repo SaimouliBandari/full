@@ -102,7 +102,7 @@ app.post('/api/shorturl', bodyParser.urlencoded({ extended: false }) , (request,
             }
         });
       } catch (error) {
-        response.json({"error":"invalid url"});
+        response.json({ error: 'invalid url' });
       }
 });
 
