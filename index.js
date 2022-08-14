@@ -78,7 +78,10 @@ app.post('/api/shorturl', bodyParser.urlencoded({ extended: false }) , (request,
                 //console.log(err);
                // console.log(Object.keys(ans).length === 0);
                 if(Object.keys(ans).length === 0){
-                  var inputShort = Math.round((Date.now()/(Math.pow(10,5))));
+
+                  var somenum = Math.floor(Math.random()*300);
+
+                  var inputShort = (Date.now + somenum);
                   Url.findOneAndUpdate(
                     {original: inputUrl},
                     {original: inputUrl, short: inputShort},
